@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced ChatBot</title>
+    <style>
+        /* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Heading styles */
+        h1 {
+            margin: 20px;
+            font-size: 2.5em;
+            color: #0056b3;
+        }
+
+        h2 {
+            margin-top: -10px;
+            font-size: 1.2em;
+            color: #888;
+        }
+
+        /* Chat container styles */
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 600px;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Chat window */
+        #chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+            background: #f5f5f5;
+        }
+
+        /* Input area styles */
+        #input-area {
+            display: flex;
+            padding: 10px;
+            background: #e9ecef;
+            border-top: 1px solid #ccc;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 1em;
+        }
+
+        #send-btn {
+            background: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #send-btn:hover {
+            background: #003f7f;
+        }
+
+        /* Message styles */
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: #e2e3e5;
+            color: #383d41;
+        }
+    </style>
+    <link rel="icon" href="hord.png" type="image/png">
+</head>
+<body>
+    <h1>Advanced ChatBot</h1>
+    <h2>Powered by Mikel Gemayel</h2>
+    <div id="chat-container">
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+    <footer><p>CBBMG v2 coming soon on:https://mikelpromax.github.io/cbbmg/chatbot2 </p></footer>
+    <script>
+        // Get DOM elements
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+    
+        // Function to create a new message
+        function createMessage(content, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+            messageDiv.textContent = content;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the latest message
+        }
+    
+        // Simulate chatbot responses
+        function getBotResponse(userMessage) {
+            const lowerCaseMessage = userMessage.toLowerCase();
+            if (lowerCaseMessage.includes('hello')) {
+                return "Hi there! How can I assist you today?";
+            } else if (lowerCaseMessage.includes('name')) {
+                return "I'm your chatbot, created by Mikel Gemayel!";
+            } else if (lowerCaseMessage.includes('event')) {
+                return "Lebanon's Independence Day is on November 22, and Sainte Barbe is on December 4.";
+            } else {
+                return "I'm not sure how to respond to that yet, but I'm always learning!";
+            }
+        }
+    
+        // Handle sending messages
+        function handleSend() {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                createMessage(userMessage, true); // Display user message
+                userInput.value = ''; // Clear input
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userMessage);
+                    createMessage(botResponse, false); // Display bot response
+                }, 500); // Simulate response delay
+            }
+        }
+    
+        // Add event listeners
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                handleSend();
+            }
+        });
+    // Feature 1: Dynamic Event List
+    const events = [
+        { name: "Lebanon's Independence Day", date: "November 22" },
+        { name: "Sainte Barbe", date: "December 4" },
+        { name: "New Year", date: "January 1" },
+    ];
+
+    function displayEvents() {
+        const eventList = document.createElement('ul');
+        eventList.id = 'event-list';
+
+        events.forEach(event => {
+            const eventItem = document.createElement('li');
+            eventItem.textContent = `${event.name} - ${event.date}`;
+            eventList.appendChild(eventItem);
+        });
+
+        const eventSection = document.createElement('div');
+        eventSection.id = 'event-section';
+        eventSection.innerHTML = `<h3>Upcoming Events:</h3>`;
+        eventSection.appendChild(eventList);
+
+        document.body.appendChild(eventSection);
+    }
+
+    // Feature 2: Input Validation
+    function validateInput(input) {
+        if (input.trim() === '') {
+            alert('Input cannot be empty. Please enter a valid message.');
+            return false;
+        }
+        if (input.length > 500) {
+            alert('Message too long. Please keep it under 500 characters.');
+            return false;
+        }
+        return true;
+    }
+
+    // Modify the handleSend function to include validation
+    function handleSend() {
+        const userMessage = userInput.value.trim();
+        if (validateInput(userMessage)) {
+            createMessage(userMessage, true); // Display user message
+            userInput.value = ''; // Clear input
+            setTimeout(() => {
+                const botResponse = getBotResponse(userMessage);
+                createMessage(botResponse, false); // Display bot response
+            }, 500); // Simulate response delay
+        }
+    }
+
+    // Feature 3: Random Facts (Dynamic Content)
+    const randomFacts = [
+        "The first computer programmer was Ada Lovelace.",
+        "Lebanon is home to the world's oldest cedar trees.",
+        "The Eiffel Tower can be 15 cm taller during the summer due to heat expansion.",
+    ];
+
+    function getRandomFact() {
+        const randomIndex = Math.floor(Math.random() * randomFacts.length);
+        return randomFacts[randomIndex];
+    }
+
+    // Add a button for random facts
+    function addRandomFactButton() {
+        const factButton = document.createElement('button');
+        factButton.id = 'fact-button';
+        factButton.textContent = 'Get a Random Fact';
+        factButton.addEventListener('click', () => {
+            const factMessage = getRandomFact();
+            createMessage(factMessage, false);
+        });
+
+        document.body.appendChild(factButton);
+    }
+
+    // Feature 4: Clear Chat
+    function clearChat() {
+        chatWindow.innerHTML = ''; // Clear all messages
+        createMessage("Chat cleared. Start a new conversation!", false);
+    }
+
+    function addClearChatButton() {
+        const clearButton = document.createElement('button');
+        clearButton.id = 'clear-chat-button';
+        clearButton.textContent = 'Clear Chat';
+        clearButton.addEventListener('click', clearChat);
+
+        document.body.appendChild(clearButton);
+    }
+
+    // Initialize Advanced Features
+    function initializeAdvancedFeatures() {
+        displayEvents();
+        addRandomFactButton();
+        addClearChatButton();
+    }
+
+    // Call the initialization function on page load
+    window.onload = initializeAdvancedFeatures;
+
+    // Feature 1: Animations for Messages
+    function animateMessage(messageElement) {
+        messageElement.style.opacity = 0;
+        messageElement.style.transform = "translateY(20px)";
+        setTimeout(() => {
+            messageElement.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+            messageElement.style.opacity = 1;
+            messageElement.style.transform = "translateY(0)";
+        }, 50);
+    }
+
+    // Override createMessage to include animation
+    function createMessage(message, isUser) {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", isUser ? "user" : "bot");
+        messageElement.textContent = message;
+
+        chatWindow.appendChild(messageElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        animateMessage(messageElement);
+    }
+
+    // Feature 2: Pop-Up Notifications
+    function showNotification(message) {
+        const notification = document.createElement("div");
+        notification.classList.add("notification");
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.opacity = 0;
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+
+    // Add notification for new feature
+    window.onload = () => {
+        showNotification("Welcome to the enhanced chatbot experience!");
+    };
+
+    // Feature 3: Advanced CSS Styling
+    const style = document.createElement("style");
+    style.textContent = `
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2d87f0;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .message.user {
+            animation: fadeInLeft 0.5s ease;
+        }
+        
+        .message.bot {
+            animation: fadeInRight 0.5s ease;
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Feature 4: Real-Time Typing Indicator
+    const typingIndicator = document.createElement("div");
+    typingIndicator.id = "typing-indicator";
+    typingIndicator.textContent = "Bot is typing...";
+    typingIndicator.style.display = "none";
+    chatWindow.appendChild(typingIndicator);
+
+    function showTypingIndicator() {
+        typingIndicator.style.display = "block";
+        setTimeout(() => (typingIndicator.style.display = "none"), 1000);
+    }
+
+    // Override bot response to include typing delay
+    function getBotResponse(userMessage) {
+        showTypingIndicator();
+        return "Let me think...";
+    }
+
+
+    // Feature 5: Voice Recognition
+    function initializeVoiceRecognition() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            console.log("Voice recognition started...");
+        };
+
+        recognition.onerror = (event) => {
+            console.log("Error occurred in recognition: " + event.error);
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            userInput.value = transcript;
+            handleSend();
+        };
+
+        const voiceButton = document.createElement("button");
+        voiceButton.id = "voice-button";
+        voiceButton.textContent = "Start Voice Input";
+        voiceButton.addEventListener("click", () => {
+            recognition.start();
+        });
+
+        document.body.appendChild(voiceButton);
+    }
+
+    // Feature 6: Theme Toggle (Light/Dark Mode)
+    function toggleTheme() {
+        const currentTheme = document.body.classList.contains("dark-mode") ? "dark" : "light";
+        document.body.classList.toggle("dark-mode");
+
+        if (currentTheme === "light") {
+            document.body.style.backgroundColor = "#121212";
+            document.body.style.color = "#ffffff";
+        } else {
+            document.body.style.backgroundColor = "#f9f9f9";
+            document.body.style.color = "#333";
+        }
+    }
+
+    function addThemeToggleButton() {
+        const themeButton = document.createElement("button");
+        themeButton.id = "theme-button";
+        themeButton.textContent = "Toggle Dark Mode";
+        themeButton.addEventListener("click", toggleTheme);
+
+        document.body.appendChild(themeButton);
+    }
+
+    // Feature 7: Emoji Integration
+    const emojiMap = {
+        ":)": "😊",
+        ":(": "☹️",
+        ":D": "😄",
+        ";)": "😉",
+        ":P": "😛",
+    };
+
+    function convertTextToEmoji(text) {
+        return text.replace(/(:\)|:\(|:D|;\)|:P)/g, (match) => emojiMap[match] || match);
+    }
+
+    // Override createMessage function to handle emoji conversion
+    function createMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+        messageDiv.innerHTML = convertTextToEmoji(content);
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the latest message
+    }
+
+    // Feature 8: User Personalization (Name Input)
+    let userName = "";
+
+    function requestUserName() {
+        const userNamePrompt = prompt("Please enter your name:");
+        if (userNamePrompt && userNamePrompt.trim() !== "") {
+            userName = userNamePrompt.trim();
+            createMessage(`Hello ${userName}! How can I assist you today?`, false);
+        } else {
+            createMessage("Hello! How can I assist you today?", false);
+        }
+    }
+
+    // Call the requestUserName function when the page loads
+    window.onload = requestUserName;
+
+    // Add theme and voice recognition features on page load
+    window.onload = () => {
+        initializeVoiceRecognition();
+        addThemeToggleButton();
+    };
+    
+    // Feature 9: Multi-Language Support
+    const languageMap = {
+        "en": {
+            "hello": "Hi there! How can I assist you today?",
+            "name": "I'm your chatbot, created by Mikel Gemayel!",
+            "event": "Lebanon's Independence Day is on November 22, and Sainte Barbe is on December 4.",
+            "default": "I'm not sure how to respond to that yet, but I'm always learning!"
+        },
+        "fr": {
+            "hello": "Bonjour! Comment puis-je vous aider aujourd'hui?",
+            "name": "Je suis votre chatbot, créé par Mikel Gemayel!",
+            "event": "La fête de l'Indépendance du Liban est le 22 novembre, et Sainte Barbe est le 4 décembre.",
+            "default": "Je ne sais pas comment répondre à cela, mais j'apprends toujours!"
+        },
+        // Add more languages as needed
+    };
+
+    let currentLanguage = "en"; // Default language is English
+
+    function getBotResponse(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        const languageResponses = languageMap[currentLanguage];
+
+        if (lowerCaseMessage.includes('hello')) {
+            return languageResponses.hello;
+        } else if (lowerCaseMessage.includes('name')) {
+            return languageResponses.name;
+        } else if (lowerCaseMessage.includes('event')) {
+            return languageResponses.event;
+        } else {
+            return languageResponses.default;
+        }
+    }
+
+    // Feature 10: Language Selector Dropdown
+    function createLanguageSelector() {
+        const languageSelector = document.createElement("select");
+        languageSelector.id = "language-selector";
+
+        Object.keys(languageMap).forEach(lang => {
+            const option = document.createElement("option");
+            option.value = lang;
+            option.textContent = lang.toUpperCase();
+            languageSelector.appendChild(option);
+        });
+
+        languageSelector.addEventListener("change", (event) => {
+            currentLanguage = event.target.value;
+            createMessage(`Language changed to ${currentLanguage.toUpperCase()}.`, false);
+        });
+
+        document.body.appendChild(languageSelector);
+    }
+
+    // Initialize the language selector on page load
+    window.onload = () => {
+        createLanguageSelector();
+    };
+
+    // Feature 11: Save User Messages (LocalStorage)
+    function saveMessages() {
+        const messages = [];
+        const messageElements = chatWindow.querySelectorAll('.message');
+        messageElements.forEach(message => {
+            messages.push(message.textContent);
+        });
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
+    }
+
+    // Load saved messages on page load
+    function loadSavedMessages() {
+        const savedMessages = localStorage.getItem('chatMessages');
+        if (savedMessages) {
+            const messages = JSON.parse(savedMessages);
+            messages.forEach(message => createMessage(message, false));
+        }
+    }
+
+    // Add an event listener to save messages before leaving the page
+    window.addEventListener("beforeunload", saveMessages);
+
+    // Feature 12: Emoji Picker (Custom UI)
+    function showEmojiPicker() {
+        const emojiPicker = document.createElement("div");
+        emojiPicker.id = "emoji-picker";
+        emojiPicker.style.position = "absolute";
+        emojiPicker.style.bottom = "50px";
+        emojiPicker.style.left = "50%";
+        emojiPicker.style.transform = "translateX(-50%)";
+        emojiPicker.style.display = "none";
+        emojiPicker.style.border = "1px solid #ccc";
+        emojiPicker.style.padding = "10px";
+        emojiPicker.style.background = "#fff";
+        emojiPicker.style.borderRadius = "5px";
+        emojiPicker.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+
+        // Emoji list
+        const emojis = ["😊", "😄", "😉", "😛", "☹️", "😂", "😍"];
+        emojis.forEach(emoji => {
+            const emojiButton = document.createElement("button");
+            emojiButton.textContent = emoji;
+            emojiButton.addEventListener("click", () => {
+                userInput.value += emoji; // Add emoji to user input
+                emojiPicker.style.display = "none"; // Hide emoji picker
+            });
+            emojiPicker.appendChild(emojiButton);
+        });
+
+        document.body.appendChild(emojiPicker);
+
+        // Toggle emoji picker visibility
+        const emojiButton = document.createElement("button");
+        emojiButton.id = "emoji-button";
+        emojiButton.textContent = "😊";
+        emojiButton.addEventListener("click", () => {
+            emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
+        });
+
+        document.body.appendChild(emojiButton);
+    }
+
+    // Initialize the emoji picker on page load
+    window.onload = () => {
+        showEmojiPicker();
+    };
+
+    // Feature 13: User Feedback System
+    function createFeedbackForm() {
+        const feedbackForm = document.createElement("div");
+        feedbackForm.id = "feedback-form";
+        feedbackForm.style.position = "fixed";
+        feedbackForm.style.bottom = "20px";
+        feedbackForm.style.right = "20px";
+        feedbackForm.style.background = "#fff";
+        feedbackForm.style.padding = "20px";
+        feedbackForm.style.borderRadius = "10px";
+        feedbackForm.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+        feedbackForm.style.display = "none";
+
+        const feedbackTitle = document.createElement("h4");
+        feedbackTitle.textContent = "Rate Your Experience";
+        feedbackForm.appendChild(feedbackTitle);
+
+        const feedbackTextarea = document.createElement("textarea");
+        feedbackTextarea.id = "feedback-textarea";
+        feedbackTextarea.placeholder = "Please provide your feedback...";
+        feedbackTextarea.style.width = "100%";
+        feedbackTextarea.style.height = "100px";
+        feedbackTextarea.style.marginBottom = "10px";
+        feedbackForm.appendChild(feedbackTextarea);
+
+        const submitButton = document.createElement("button");
+        submitButton.textContent = "Submit Feedback";
+        submitButton.style.backgroundColor = "#28a745";
+        submitButton.style.color = "#fff";
+        submitButton.style.border = "none";
+        submitButton.style.padding = "10px 20px";
+        submitButton.style.borderRadius = "5px";
+        submitButton.addEventListener("click", submitFeedback);
+        feedbackForm.appendChild(submitButton);
+
+        const closeButton = document.createElement("button");
+        closeButton.textContent = "Close";
+        closeButton.style.backgroundColor = "#dc3545";
+        closeButton.style.color = "#fff";
+        closeButton.style.border = "none";
+        closeButton.style.padding = "10px 20px";
+        closeButton.style.borderRadius = "5px";
+        closeButton.addEventListener("click", () => {
+            feedbackForm.style.display = "none";
+        });
+        feedbackForm.appendChild(closeButton);
+
+        document.body.appendChild(feedbackForm);
+
+        // Add button to trigger feedback form
+        const feedbackButton = document.createElement("button");
+        feedbackButton.id = "feedback-button";
+        feedbackButton.textContent = "Give Feedback";
+        feedbackButton.style.position = "fixed";
+        feedbackButton.style.bottom = "20px";
+        feedbackButton.style.left = "20px";
+        feedbackButton.style.backgroundColor = "#007bff";
+        feedbackButton.style.color = "#fff";
+        feedbackButton.style.border = "none";
+        feedbackButton.style.padding = "10px 20px";
+        feedbackButton.style.borderRadius = "5px";
+        feedbackButton.addEventListener("click", () => {
+            feedbackForm.style.display = feedbackForm.style.display === "none" ? "block" : "none";
+        });
+
+        document.body.appendChild(feedbackButton);
+    }
+
+    function submitFeedback() {
+        const feedbackText = document.getElementById("feedback-textarea").value.trim();
+        if (feedbackText) {
+            alert("Thank you for your feedback!");
+            document.getElementById("feedback-textarea").value = ""; // Clear textarea
+            document.getElementById("feedback-form").style.display = "none";
+        } else {
+            alert("Please provide your feedback before submitting.");
+        }
+    }
+
+    // Initialize the feedback form on page load
+    window.onload = () => {
+        createFeedbackForm();
+    };
+
+    // Feature 14: Chatbot Analytics (Conversation Data Tracking)
+    let conversationData = {
+        userMessages: 0,
+        botMessages: 0,
+        eventMessages: 0,
+    };
+
+    function trackMessageData(isUser) {
+        if (isUser) {
+            conversationData.userMessages++;
+        } else {
+            conversationData.botMessages++;
+        }
+
+        if (isUser && userInput.value.toLowerCase().includes("event")) {
+            conversationData.eventMessages++;
+        }
+    }
+
+    function displayAnalytics() {
+        const analyticsSection = document.createElement("div");
+        analyticsSection.id = "analytics-section";
+        analyticsSection.style.position = "fixed";
+        analyticsSection.style.bottom = "80px";
+        analyticsSection.style.right = "20px";
+        analyticsSection.style.background = "#fff";
+        analyticsSection.style.padding = "10px";
+        analyticsSection.style.borderRadius = "10px";
+        analyticsSection.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+
+        const userMessagesLabel = document.createElement("p");
+        userMessagesLabel.textContent = `User Messages: ${conversationData.userMessages}`;
+        analyticsSection.appendChild(userMessagesLabel);
+
+        const botMessagesLabel = document.createElement("p");
+        botMessagesLabel.textContent = `Bot Messages: ${conversationData.botMessages}`;
+        analyticsSection.appendChild(botMessagesLabel);
+
+        const eventMessagesLabel = document.createElement("p");
+        eventMessagesLabel.textContent = `Event Related Messages: ${conversationData.eventMessages}`;
+        analyticsSection.appendChild(eventMessagesLabel);
+
+        document.body.appendChild(analyticsSection);
+    }
+
+    // Track message data during conversation
+    function handleSend() {
+        const userMessage = userInput.value.trim();
+        if (validateInput(userMessage)) {
+            createMessage(userMessage, true); // Display user message
+            trackMessageData(true); // Track user message
+            userInput.value = ''; // Clear input
+            setTimeout(() => {
+                const botResponse = getBotResponse(userMessage);
+                createMessage(botResponse, false); // Display bot response
+                trackMessageData(false); // Track bot message
+            }, 500); // Simulate response delay
+        }
+    }
+
+    // Initialize chatbot analytics on page load
+    window.onload = () => {
+        displayAnalytics();
+    };
+
+    // Feature 15: Chatbot Personality (Personalized Response)
+    function getPersonalizedResponse(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+
+        if (lowerCaseMessage.includes("how are you")) {
+            return "I'm doing great, thank you for asking!";
+        } else if (lowerCaseMessage.includes("thank you") || lowerCaseMessage.includes("thanks")) {
+            return "You're welcome! I'm always here to help.";
+        } else {
+            return getBotResponse(userMessage);
+        }
+    }
+
+    // Override the bot response to include personalized responses
+    function getBotResponse(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        const languageResponses = languageMap[currentLanguage];
+
+        if (lowerCaseMessage.includes("hello")) {
+            return languageResponses.hello;
+        } else if (lowerCaseMessage.includes("name")) {
+            return languageResponses.name;
+        } else if (lowerCaseMessage.includes("event")) {
+            return languageResponses.event;
+        } else if (lowerCaseMessage.includes("how are you")) {
+            return "I'm doing great, thank you for asking!";
+        } else {
+            return languageResponses.default;
+        }
+    }
+        // Feature 9: Speech Recognition (Voice Commands)
+        function startVoiceRecognition() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = function() {
+            showNotification("Voice recognition started. Speak now!");
+        };
+        
+        recognition.onresult = function(event) {
+            const userMessage = event.results[0][0].transcript;
+            createMessage(userMessage, true); // Display user message
+            processUserMessage(userMessage); // Process message for response
+        };
+
+        recognition.onerror = function(event) {
+            showNotification("Sorry, there was an error with speech recognition.");
+        };
+        
+        recognition.onend = function() {
+            showNotification("Voice recognition ended.");
+        };
+
+        recognition.start();
+    }
+
+    // Feature 10: Visual Enhancements (Hover Effects)
+    const messageElements = document.querySelectorAll('.message');
+    messageElements.forEach((message) => {
+        message.addEventListener('mouseover', () => {
+            message.style.backgroundColor = "#f1f1f1";
+        });
+        message.addEventListener('mouseout', () => {
+            message.style.backgroundColor = message.classList.contains('user-message') ? "#d1ecf1" : "#e2e3e5";
+        });
+    });
+
+    // Feature 11: User Profile Setup
+    function createUserProfile() {
+        const profileSection = document.createElement('div');
+        profileSection.id = 'user-profile';
+        profileSection.innerHTML = `
+            <h3>Welcome to your Profile</h3>
+            <label for="user-name">Your Name:</label>
+            <input type="text" id="user-name" placeholder="Enter your name">
+            <button id="save-profile">Save Profile</button>
+        `;
+        document.body.appendChild(profileSection);
+
+        document.getElementById('save-profile').addEventListener('click', () => {
+            const userName = document.getElementById('user-name').value.trim();
+            if (userName) {
+                showNotification(`Hello, ${userName}! Your profile has been saved.`);
+                localStorage.setItem('userName', userName); // Save user name to local storage
+            } else {
+                showNotification('Please enter a valid name.');
+            }
+        });
+    }
+
+    // Feature 12: Message Analytics (Track Sentiment)
+    function trackMessageData(isUser) {
+        const messageData = {
+            isUser: isUser,
+            timestamp: new Date(),
+        };
+
+        // Save message data for further analysis (example: track user sentiment, time of interactions)
+        console.log("Message data:", messageData);
+    }
+
+    // Feature 13: Feedback Form (Collect User Feedback)
+    function createFeedbackForm() {
+        const feedbackForm = document.createElement('div');
+        feedbackForm.id = 'feedback-form';
+        feedbackForm.innerHTML = `
+            <h3>We value your feedback!</h3>
+            <textarea id="feedback-text" placeholder="Enter your feedback here..." rows="4"></textarea>
+            <button id="submit-feedback">Submit Feedback</button>
+        `;
+        feedbackForm.style.display = "none";
+        document.body.appendChild(feedbackForm);
+
+        document.getElementById('submit-feedback').addEventListener('click', () => {
+            const feedback = document.getElementById('feedback-text').value.trim();
+            if (feedback) {
+                showNotification('Thank you for your feedback!');
+                console.log("User Feedback:", feedback); // Save feedback for analysis
+                feedbackForm.style.display = "none"; // Hide feedback form after submission
+            } else {
+                showNotification('Please enter feedback before submitting.');
+            }
+        });
+    }
+
+    // Feature 14: User Data Persistence (Save & Retrieve Data)
+    function retrieveUserData() {
+        const savedUserName = localStorage.getItem('userName');
+        if (savedUserName) {
+            showNotification(`Welcome back, ${savedUserName}!`);
+        }
+    }
+
+    // Feature 15: Analytics Dashboard (Track Chat Usage)
+    function displayAnalytics() {
+        const chatAnalytics = {
+            totalMessages: 0,
+            totalUserMessages: 0,
+            totalBotMessages: 0,
+        };
+
+        // Add function to track messages sent
+        function updateAnalytics(isUser) {
+            chatAnalytics.totalMessages += 1;
+            if (isUser) {
+                chatAnalytics.totalUserMessages += 1;
+            } else {
+                chatAnalytics.totalBotMessages += 1;
+            }
+
+            console.log("Chat Analytics:", chatAnalytics); // Display analytics data in the console
+        }
+
+        // Display the analytics on the page
+        const analyticsSection = document.createElement('div');
+        analyticsSection.id = 'analytics-section';
+        analyticsSection.innerHTML = `
+            <h3>Chat Analytics</h3>
+            <p>Total Messages: <span id="total-messages">${chatAnalytics.totalMessages}</span></p>
+            <p>User Messages: <span id="total-user-messages">${chatAnalytics.totalUserMessages}</span></p>
+            <p>Bot Messages: <span id="total-bot-messages">${chatAnalytics.totalBotMessages}</span></p>
+        `;
+        document.body.appendChild(analyticsSection);
+
+        // Update analytics after each message
+        function updateChatAnalytics(isUser) {
+            updateAnalytics(isUser);
+            document.getElementById('total-messages').textContent = chatAnalytics.totalMessages;
+            document.getElementById('total-user-messages').textContent = chatAnalytics.totalUserMessages;
+            document.getElementById('total-bot-messages').textContent = chatAnalytics.totalBotMessages;
+        }
+
+        // Update analytics after every message
+        window.updateChatAnalytics = updateChatAnalytics;
+    }
+
+    // Initialize Features
+    window.onload = () => {
+        createUserProfile();
+        createFeedbackForm();
+        displayAnalytics();
+        retrieveUserData();
+    };
+        // Feature 1: Custom Greetings
+        function handleGreeting(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        
+        if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
+            return "Hello! How can I help you today?";
+        } else if (lowerCaseMessage.includes('how are you')) {
+            return "I'm doing great, thanks for asking! How about you?";
+        } else if (lowerCaseMessage.includes('how\'s it going')) {
+            return "It's going well! How about you?";
+        }
+        return null; // If no greeting, continue to other checks
+    }
+
+    // Feature 2: Handle Frequently Asked Questions (FAQs)
+    function handleFAQ(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        
+        if (lowerCaseMessage.includes('your name')) {
+            return "I am your friendly chatbot, created by Mikel Gemayel!";
+        } else if (lowerCaseMessage.includes('what is your purpose')) {
+            return "I'm here to assist you, chat, and provide information!";
+        } else if (lowerCaseMessage.includes('how can you help')) {
+            return "I can help with answering questions, solving math problems, telling random facts, and more!";
+        }
+        return null; // If no FAQ, continue to other checks
+    }
+
+    // Feature 3: Solve Basic Math Equations
+    function solveMathEquation(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        
+        // Check if the message is a math equation like "1+1"
+        const match = lowerCaseMessage.match(/(\d+)\s*([+\-*/])\s*(\d+)/);
+        if (match) {
+            const num1 = parseFloat(match[1]);
+            const operator = match[2];
+            const num2 = parseFloat(match[3]);
+            
+            let result;
+            switch (operator) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    result = num1 / num2;
+                    break;
+                default:
+                    return "I don't understand this operation.";
+            }
+            return `The result of ${num1} ${operator} ${num2} is ${result}.`;
+        }
+        return null; // If no equation, continue to other checks
+    }
+
+    // Feature 4: Facts about Animals and Movies
+    function getAnimalFact() {
+        const animalFacts = [
+            "Elephants are the largest land animals on Earth.",
+            "A group of flamingos is called a 'flamboyance'.",
+            "Cheetahs are the fastest land animals, reaching speeds of up to 75 mph.",
+        ];
+        const randomIndex = Math.floor(Math.random() * animalFacts.length);
+        return animalFacts[randomIndex];
+    }
+
+    function getMovieFact() {
+        const movieFacts = [
+            "Did you know? The first feature-length animated movie was Disney's 'Snow White and the Seven Dwarfs' (1937).",
+            "The longest-running movie in theaters is 'The Rocky Horror Picture Show'!",
+            "The movie 'Avatar' held the title for the highest-grossing film of all time until 'Avengers: Endgame' surpassed it.",
+        ];
+        const randomIndex = Math.floor(Math.random() * movieFacts.length);
+        return movieFacts[randomIndex];
+    }
+
+    function handleFacts(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        
+        if (lowerCaseMessage.includes('animal')) {
+            return getAnimalFact();
+        } else if (lowerCaseMessage.includes('movie')) {
+            return getMovieFact();
+        }
+        return null; // If no specific request, continue to other checks
+    }
+
+    // Main function to handle user input and generate bot response
+    function getBotResponse(userMessage) {
+        let response = handleGreeting(userMessage);
+        if (response) return response;
+
+        response = handleFAQ(userMessage);
+        if (response) return response;
+
+        response = solveMathEquation(userMessage);
+        if (response) return response;
+
+        response = handleFacts(userMessage);
+        if (response) return response;
+
+        return "I'm not sure how to respond to that yet, but I'm always learning!";
+    }
+
+    // Function to create and display messages in the chat
+    function createMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+        messageDiv.textContent = content;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the latest message
+    }
+
+    // Handle sending user input and bot response
+    function handleSend() {
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            createMessage(userMessage, true); // Display user message
+            userInput.value = ''; // Clear input
+            setTimeout(() => {
+                const botResponse = getBotResponse(userMessage);
+                createMessage(botResponse, false); // Display bot response
+            }, 500); // Simulate response delay
+        }
+    }
+
+    // Add event listeners for sending messages
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            handleSend();
+        }
+    });
+     // Feature 1: Expanded Animal Facts
+     function getAnimalFact() {
+        const animalFacts = [
+            "Elephants are the largest land animals on Earth.",
+            "A group of flamingos is called a 'flamboyance'.",
+            "Cheetahs are the fastest land animals, reaching speeds of up to 75 mph.",
+            "Octopuses have three hearts and blue blood.",
+            "Kangaroos can't walk backwards.",
+            "Polar bears have black skin under their white fur to absorb more heat from the sun.",
+            "A giraffe's tongue can be up to 18 inches long!",
+        ];
+        const randomIndex = Math.floor(Math.random() * animalFacts.length);
+        return animalFacts[randomIndex];
+    }
+
+    // Feature 2: Expanded Movie Facts
+    function getMovieFact() {
+        const movieFacts = [
+            "Did you know? The first feature-length animated movie was Disney's 'Snow White and the Seven Dwarfs' (1937).",
+            "The longest-running movie in theaters is 'The Rocky Horror Picture Show'!",
+            "The movie 'Avatar' held the title for the highest-grossing film of all time until 'Avengers: Endgame' surpassed it.",
+            "The first ever 'Star Wars' movie was released in 1977 and became an instant cultural phenomenon.",
+            "In the movie 'The Matrix,' the iconic green tint is a result of computer code, symbolizing the virtual world.",
+            "In 'The Godfather', Marlon Brando stuffed cotton in his cheeks to create his iconic Vito Corleone look.",
+        ];
+        const randomIndex = Math.floor(Math.random() * movieFacts.length);
+        return movieFacts[randomIndex];
+    }
+
+    // Feature 3: Frequently Asked Questions (Expanded)
+    function handleFAQ(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        
+        if (lowerCaseMessage.includes('your name')) {
+            return "I am your friendly chatbot, created by Mikel Gemayel!";
+        } else if (lowerCaseMessage.includes('what is your purpose')) {
+            return "I'm here to assist you, chat, and provide information!";
+        } else if (lowerCaseMessage.includes('how can you help')) {
+            return "I can help with answering questions, solving math problems, telling random facts, and more!";
+        } else if (lowerCaseMessage.includes('who created you')) {
+            return "I was created by Mikel Gemayel!";
+        } else if (lowerCaseMessage.includes('where are you from')) {
+            return "I exist in the digital world, but my creator is from Lebanon!";
+        } else if (lowerCaseMessage.includes('what can you do')) {
+            return "I can answer questions, solve basic math, tell facts, and provide information about various topics!";
+        } else if (lowerCaseMessage.includes('how old are you')) {
+            return "I don’t have an age in the traditional sense, but I’m constantly learning!";
+        }
+        return null; // If no FAQ, continue to other checks
+    }
+
+    // Feature 4: Knowledge about the most well-known things (Famous landmarks, historical figures, etc.)
+    function getFamousLandmarkFact() {
+        const landmarks = [
+            "The Great Wall of China is over 13,000 miles long and was built over several centuries.",
+            "The Eiffel Tower in Paris was initially criticized but has become one of the most recognizable structures in the world.",
+            "The Pyramids of Giza in Egypt were built as tombs for the pharaohs, and they are over 4,500 years old.",
+            "The Colosseum in Rome was used for gladiatorial contests and public spectacles, and it could hold up to 80,000 spectators.",
+            "The Statue of Liberty in New York was a gift from France to the United States in 1886, symbolizing freedom and democracy."
+        ];
+        const randomIndex = Math.floor(Math.random() * landmarks.length);
+        return landmarks[randomIndex];
+    }
+
+    function getFamousHistoricalFigure() {
+        const figures = [
+            "Albert Einstein, known for his theory of relativity, is one of the most influential scientists in history.",
+            "Cleopatra was the last active ruler of the Ptolemaic Kingdom of Egypt, and she is remembered for her intelligence and political skills.",
+            "Nelson Mandela, a leader in the fight against apartheid in South Africa, became the country's first black president.",
+            "Leonardo da Vinci was not only a painter but also an inventor and scientist, known for works like the Mona Lisa and The Last Supper.",
+            "Mahatma Gandhi led the Indian independence movement against British rule through non-violent civil disobedience."
+        ];
+        const randomIndex = Math.floor(Math.random() * figures.length);
+        return figures[randomIndex];
+    }
+
+    function getFamousEventFact() {
+        const events = [
+            "The Moon landing in 1969 marked humanity's first step on another celestial body, with Neil Armstrong becoming the first person to walk on the Moon.",
+            "The fall of the Berlin Wall in 1989 marked the end of the Cold War and the reunification of Germany.",
+            "The attack on Pearl Harbor on December 7, 1941, led to the United States' entry into World War II.",
+            "The signing of the Declaration of Independence in 1776 declared the United States' independence from Great Britain.",
+            "The first Olympic Games were held in 776 BC in Olympia, Greece."
+        ];
+        const randomIndex = Math.floor(Math.random() * events.length);
+        return events[randomIndex];
+    }
+
+    // Main function to get bot response
+    function getBotResponse(userMessage) {
+        let response = handleGreeting(userMessage);
+        if (response) return response;
+
+        response = handleFAQ(userMessage);
+        if (response) return response;
+
+        response = solveMathEquation(userMessage);
+        if (response) return response;
+
+        response = handleFacts(userMessage);
+        if (response) return response;
+
+        return "I'm not sure how to respond to that yet, but I'm always learning!";
+    }
+
+    // Handle facts (Animal, Movie, Famous Facts)
+    function handleFacts(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        
+        if (lowerCaseMessage.includes('animal')) {
+            return getAnimalFact();
+        } else if (lowerCaseMessage.includes('movie')) {
+            return getMovieFact();
+        } else if (lowerCaseMessage.includes('landmark')) {
+            return getFamousLandmarkFact();
+        } else if (lowerCaseMessage.includes('historical figure')) {
+            return getFamousHistoricalFigure();
+        } else if (lowerCaseMessage.includes('event')) {
+            return getFamousEventFact();
+        }
+        return null; // If no specific request, continue to other checks
+    }
+
+    // Create and display messages
+    function createMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+        messageDiv.textContent = content;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the latest message
+    }
+
+    // Handle send message
+    function handleSend() {
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            createMessage(userMessage, true); // Display user message
+            userInput.value = ''; // Clear input
+            setTimeout(() => {
+                const botResponse = getBotResponse(userMessage);
+                createMessage(botResponse, false); // Display bot response
+            }, 500); // Simulate response delay
+        }
+    }
+
+    // Add event listeners for send button and Enter key
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            handleSend();
+        }
+    });
+        // Handle farewell message (Bye)
+    function handleFarewell(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        if (lowerCaseMessage.includes('bye')) {
+            return "Goodbye! It was nice talking to you! Take care!";
+        }
+        return null;
+    }
+
+    // Handle correction query
+    function handleCorrectionQuery(userMessage) {
+        if (userMessage.toLowerCase().includes('what do you correct')) {
+            return "I try to correct my mistakes based on your feedback and ensure accurate responses.";
+        }
+        return null;
+    }
+
+    // Handle date and time
+    function handleDateTimeQuery(userMessage) {
+        if (userMessage.toLowerCase().includes('date') || userMessage.toLowerCase().includes('time')) {
+            const currentDate = new Date();
+            return `Current Date and Time: ${currentDate.toLocaleString()}`;
+        }
+        return null;
+    }
+
+    // Main function to get bot response
+    function getBotResponse(userMessage) {
+        let response = handleFarewell(userMessage);
+        if (response) return response;
+
+        response = handleCorrectionQuery(userMessage);
+        if (response) return response;
+
+        response = handleDateTimeQuery(userMessage);
+        if (response) return response;
+
+        return "I'm still learning! Please ask me anything!";
+    }
+
+    // Create and display messages
+    function createMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+        messageDiv.textContent = content;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the latest message
+    }
+
+    // Handle send message
+    function handleSend() {
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            createMessage(userMessage, true); // Display user message
+            userInput.value = ''; // Clear input
+            setTimeout(() => {
+                const botResponse = getBotResponse(userMessage);
+                createMessage(botResponse, false); // Display bot response
+            }, 500); // Simulate response delay
+        }
+    }
+
+    // Add event listeners for send button and Enter key
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            handleSend();
+        }
+    }); function handleFarewell(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        if (lowerCaseMessage.includes('bye')) {
+            return "Goodbye! It was nice talking to you! Take care!";
+        }
+        return null;
+    }
+
+    // Handle correction query
+    function handleCorrectionQuery(userMessage) {
+        if (userMessage.toLowerCase().includes('what do you correct') || userMessage.toLowerCase().includes('what correct')) {
+            return "I try to correct my mistakes based on your feedback and ensure accurate responses.";
+        }
+        return null;
+    }
+
+    // Handle date and time
+    function handleDateTimeQuery(userMessage) {
+        if (userMessage.toLowerCase().includes('date') || userMessage.toLowerCase().includes('time')) {
+            const currentDate = new Date();
+            return `Current Date and Time: ${currentDate.toLocaleString()}`;
+        }
+        return null;
+    }
+
+    // Handle general questions like "how are you" and "movie"
+    function handleGeneralQueries(userMessage) {
+        const lowerCaseMessage = userMessage.toLowerCase();
+        if (lowerCaseMessage.includes('how are you')) {
+            return "I'm still learning and improving! Thanks for asking!";
+        } else if (lowerCaseMessage.includes('movie')) {
+            return "I love talking about movies! What kind of movies do you like?";
+        }
+        return null;
+    }
+
+    // Main function to get bot response
+    function getBotResponse(userMessage) {
+        let response = handleFarewell(userMessage);
+        if (response) return response;
+
+        response = handleCorrectionQuery(userMessage);
+        if (response) return response;
+
+        response = handleDateTimeQuery(userMessage);
+        if (response) return response;
+
+        response = handleGeneralQueries(userMessage);
+        if (response) return response;
+
+        return "I'm still learning! Please ask me anything!";
+    }
+
+    // Create and display messages
+    function createMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+        messageDiv.textContent = content;
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the latest message
+    }
+
+    // Handle send message
+    function handleSend() {
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            createMessage(userMessage, true); // Display user message
+            userInput.value = ''; // Clear input
+            setTimeout(() => {
+                const botResponse = getBotResponse(userMessage);
+                createMessage(botResponse, false); // Display bot response
+            }, 500); // Simulate response delay
+        }
+    }
+
+    // Add event listeners for send button and Enter key
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            handleSend();
+        }
+    });
+</script>
+</body>
+</html>
