@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>main page</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    body {
+      background-color: #0088ff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      justify-content: center;
+      overflow-y: auto; /* Allow vertical scrolling */
+    }
+
+/* Style the button container to allow wrapping */
+.button-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+  gap: 10px; /* Adds space between buttons */
+  justify-content: center;
+}
+
+/* Styling for individual buttons */
+button {
+  background-color: #00b3b3;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  width: 200px; /* Adjust the width as needed */
+  height: 60px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: skewX(-20deg); /* Skews the button to make it a parallelogram */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Button hover effect */
+button:hover {
+  background-color: #009999;
+  transform: skewX(-20deg) scale(1.1); /* Slightly enlarge the button on hover */
+}
+
+/* Force buttons to fill the container space when necessary */
+@media screen and (max-width: 600px) {
+  button {
+    width: 100%; /* Make the buttons take up full width on small screens */
+  }
+}
+
+
+    /* Optional styling for the container */
+    .iframe-container {
+      width: 100%;
+      height: 90vh; /* Increase the height to 90% of the viewport height */
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    iframe {
+      width: 100%;
+      border: none;
+    }
+    header{
+        font-size: 90px;
+        font-family:cursive;
+        text-align: center;
+        background-color: #000dff;
+    }
+    main{
+        background-color: #3582c6;
+    }
+    .links-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px; /* Space between each link */
+    }
+    
+    .links-container a {
+      text-decoration: none;
+      font-size: 16px;
+      color: #000;
+    }
+
+    .links-container a:hover {
+      color: #007BFF; /* Change color on hover */
+    }
+  </style>
+</head>
+<body>
+    <header>Main Page</header>
+    <main>
+        <div class="links-container">
+          <a href="https://mikelpromax.github.io/333939839393/ah.html" target="_blank">Guessing Game</a>
+          <a href="https://mikelpromax.github.io/calculator./scratch_3.html" target="_blank">Calculator</a>
+          <a href="https://mikelpromax.github.io/note/note.html" target="_blank">Note Taking App</a>
+          <a href="https://mikelpromax.github.io/passwordGenerator/" target="_blank">Password Generator</a>
+          <a href="https://mikelpromax.github.io/cbbmg/chatbotv12.html" target="_blank">Chatbot</a>
+        </div></main>
+    
+
+  <!-- Buttons to trigger the action -->
+  <button onclick="embedWebsite('https://mikelpromax.github.io/333939839393/ah.html')">Open Guessing Game</button>
+  <button onclick="embedWebsite('https://mikelpromax.github.io/calculator./scratch_3.html')">Open Calculator</button>
+  <button onclick="embedWebsite('https://mikelpromax.github.io/note/note.html')">Open Note</button>
+  <button onclick="embedWebsite('https://mikelpromax.github.io/passwordGenerator/')">Password generator</button>
+  <button onclick="embedWebsite('https://mikelpromax.github.io/cbbmg/chatbotv12.html')">Open Chatbot</button>
+  <button onclick="toggleIframe()">Hide/Show Iframe</button>
+
+  <br>
+
+  <!-- The div where the website will be embedded -->
+  <div id="container">
+    <!-- The iframe will be created dynamically here -->
+  </div>
+
+  <script>
+    // Function to embed website in the iframe
+    function embedWebsite(url) {
+      const container = document.getElementById('container');
+
+      // Check if iframe already exists
+      let iframe = container.querySelector('iframe');
+      
+      if (!iframe) {
+        // Create the iframe if it doesn't exist
+        iframe = document.createElement('iframe');
+        container.appendChild(iframe);
+      }
+
+      // Set the iframe src to the new URL
+      iframe.src = url;
+
+      // Resize the iframe after it has loaded to fit the content
+      iframe.onload = function() {
+        resizeIframe(iframe);
+      };
+    }
+
+    // Function to resize the iframe based on the content height
+    function resizeIframe(iframe) {
+      // Get the document inside the iframe (if same-origin)
+      try {
+        const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        if (iframeDocument) {
+          // Set iframe height to the content height
+          iframe.style.height = iframeDocument.documentElement.scrollHeight + 'px';
+        }
+      } catch (e) {
+        // If there's a cross-origin issue, just set a fixed height
+        iframe.style.height = "100vh"; // or set a specific height like "500px"
+        console.error("Cross-origin content detected. Iframe height set to fixed value.");
+      }
+    }
+
+    // Function to toggle the visibility of the iframe
+    function toggleIframe() {
+      const iframe = document.querySelector('iframe');
+      
+      if (iframe) {
+        if (iframe.style.display === 'none') {
+          iframe.style.display = 'block'; // Show iframe
+        } else {
+          iframe.style.display = 'none'; // Hide iframe
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
