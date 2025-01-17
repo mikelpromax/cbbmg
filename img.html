@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Recognition with TensorFlow.js</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Recognition Using TensorFlow.js</h1>
+
+    <!-- Input for selecting an image -->
+    <input type="file" id="upload" accept="image/*" />
+    <br>
+
+    <!-- Image element to display the uploaded image -->
+    <img id="image" src="" alt="Selected Image" style="display: none;" />
+    
+    <!-- Display the recognition result -->
+    <div class="result" id="result"></div>
+
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <!-- Load the MobileNet model from TensorFlow.js Models -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-models/mobilenet"></script>
+    
+    <script>
+        // Function to load the MobileNet model
+        async function loadModel() {
+            const model = await tf.models.mobilenet.load();  // Correct way to access the MobileNet model
+            return model;
+        }
+
+        // Function to process the uploaded image
+        async function recognizeImage() {
+            const fileInput = document.getElementById('upload');
+            const imageElement = document.getElementById('image');
+            const resultDiv = document.getElementById('result');
+
+            if (fileInput.files.length === 0) {
+                return;
+            }
+
+            // Display the uploaded image
+            const file = fileInput.files[0];
+            const imageURL = URL.createObjectURL(file);
+            imageElement.src = imageURL;
+            imageElement.style.display = 'block';
+
+            // Wait until the image is loaded
+            await new Promise(resolve => imageElement.onload = resolve);
+
+            // Load the pre-trained model
+            const model = await loadModel();
+
+            // Perform image classification
+            const predictions = await model.classify(imageElement);
+            console.log(predictions);
+
+            // Display the top prediction
+            resultDiv.innerText = `Predicted Class: ${predictions[0].className}, Probability: ${predictions[0].probability.toFixed(4)}`;
+        }
+
+        // Listen for file input changes
+        document.getElementById('upload').addEventListener('change', recognizeImage);
+    </script>
+</body>
+</html>
