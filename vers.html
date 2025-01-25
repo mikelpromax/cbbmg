@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vexetorix</title><link rel="icon" href="hord.png" type="image/png">
+  <style>
+    /* General Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #3f51b5, #1a237e);
+      color: #fff;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    /* Chatbox */
+    .chatbox {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      background: #f7f8fa;
+    }
+
+    .chat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Chat Message */
+    .chat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      max-width: 90%;
+    }
+
+    .chat .role {
+      font-weight: bold;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555555;
+    }
+
+    /* User Message */
+    .chat.outgoing {
+      align-self: flex-end;
+      background: #3f51b5;
+      color: #ffffff;
+    }
+
+    .chat.outgoing .role {
+      color: #c5cae9;
+    }
+
+    /* Vexetorix Message */
+    .chat.incoming {
+      align-self: flex-start;
+      background: #eeeeee;
+      color: #333333;
+    }
+
+    .chat.incoming .role {
+      color: #3f51b5;
+    }
+
+    /* Chat Input */
+    .chat-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      border-top: 1px solid #ddd;
+      background: #f1f1f1;
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      resize: none;
+      border: none;
+      outline: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #ffffff;
+      font-size: 14px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-input textarea::placeholder {
+      color: #999999;
+    }
+
+    .send-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 24px;
+      color: #3f51b5;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .send-btn:hover {
+      color: #1a237e;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chatbox">
+      <ul class="chat-list"></ul>
+    </div>
+    <div class="chat-input">
+      <textarea placeholder="Type your message..."></textarea>
+      <span class="send-btn material-symbols-outlined">send</span>
+    </div>
+  </div>
+
+
+<script>
+    const sendChatbtn = document.querySelector(".chat-input span");
+    const chatInput = document.querySelector(".chat-input textarea");
+    const chatBox = document.querySelector(".chatbox");
+    const API_KEY="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";
+    
+    const createChatLi=(message,className)=>{
+        const chatLi = document.createElement('li');
+    chatLi.classList.add("chat", className);
+    
+    // Add role labels: "User:" for outgoing, "Vexetorix:" for incoming
+    let role = className === "outgoing" ? "User: " : "Vexetorix: ";
+    chatLi.innerHTML = `<span class="role">${role}</span><p>${message}</p>`;
+    
+    return chatLi;
+    }
+    const generateReponse=(incomingChatLi)=>{
+        const API_URL="https://api.openai.com/v1/chat/completions";
+        const messageElement=incomingChatLi.querySelector("p");
+        const requestOptions={
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":`Bearer ${API_KEY}`
+            },body:JSON.stringify({
+               model: "gpt-4o-mini",
+               messages:[{role:"user",content:userMessage}]
+
+            })
+        }
+        fetch(API_URL,requestOptions).then(res=>res.json()).then(data =>{
+            messageElement.textContent=data.choices[0].message.content;
+        }).catch((error)=>{
+            messageElement.textContent="Oops , something went wrong.";
+        })
+    }
+    let userMessage;
+    const handlechat=() =>{
+        userMessage=chatInput.value.trim();
+        if(!userMessage) return;
+        chatBox.appendChild(createChatLi(userMessage,"outgoing"));
+        setTimeout(()=>{
+            const incomingChatLi=createChatLi("Wait a minute...","incoming")
+            chatBox.appendChild(incomingChatLi);
+            generateReponse(incomingChatLi);
+        },600);
+  
+
+    }
+    sendChatbtn.addEventListener("click",handlechat);
+</script></body>
+</html>
