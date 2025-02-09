@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quiz Maker - Create and Play Quizzes</title>
+    <link rel="icon" href="logor.png" type="image/png">
+    <style>
+        fieldset {
+            background-color: antiquewhite;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #k {
+            text-align: center;
+            display: block;
+            font-size: 1cm;
+        }
+        body {
+            background-color: aquamarine;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .name {
+            width: 300px;
+            height: 60px;
+            font-size: 20px;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid blue;
+            border-radius: 5px;
+        }
+        .question-container {
+            margin-top: 20px;
+        }
+        .question-container input {
+            margin: 5px 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .question-container button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .url-container {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .url-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .url-container button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <fieldset id="d">
+        <div id="k">
+            <legend><input class="name" id="name" name="name" placeholder="Enter your quiz name..." type="text"></legend>
+            <label>Choose your quiz type</label><br>
+            <select id="type">
+                <option value="none"></option>
+                <option value="choose">Choose the correct answer</option>
+                <option value="guess">Guess the correct answer</option>
+            </select>
+            <br><button onclick="submit1()">Submit</button>
+        </div>
+    </fieldset>
+
+    <script>
+        let questionCount = 1;
+
+        // Load quiz from URL if it exists
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const quizDataEncoded = urlParams.get('quiz');
+
+            if (quizDataEncoded) {
+                // Decode the Base64 data
+                const quizDataJSON = atob(quizDataEncoded);
+                const quizData = JSON.parse(quizDataJSON);
+
+                // Load the quiz for playing
+                loadQuiz(quizData);
+            }
+        };
+
+        function submit1() {
+            const selectElement = document.getElementById('type');
+            const selectedValue = selectElement.value;
+
+            if (selectedValue === 'guess') {
+                createGuessQuiz();
+            } else if (selectedValue === 'choose') {
+                createChooseQuiz();
+            }
+        }
+
+        function createGuessQuiz() {
+            const mainer = document.getElementById('name').value;
+            document.getElementById('k').style.display = 'none';
+
+            const newDiv = document.createElement('div');
+            newDiv.id = 'a';
+            document.getElementById('d').appendChild(newDiv);
+
+            const title = document.createElement('legend');
+            title.innerHTML = mainer;
+            newDiv.appendChild(title);
+
+            addGuessQuestion(newDiv);
+
+            const finishButton = document.createElement('button');
+            finishButton.textContent = 'Finish Quiz';
+            finishButton.onclick = finishQuiz;
+            newDiv.appendChild(finishButton);
+        }
+
+        function addGuessQuestion(container) {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+
+            const question = document.createElement('input');
+            question.placeholder = 'Enter your question here...';
+            question.id = `question${questionCount}`;
+            questionDiv.appendChild(question);
+
+            const answer = document.createElement('input');
+            answer.id = `answer${questionCount}`;
+            answer.placeholder = 'Enter the answer here...';
+            questionDiv.appendChild(document.createElement('br'));
+            questionDiv.appendChild(answer);
+            questionDiv.appendChild(document.createElement('br'));
+
+            const submit = document.createElement('button');
+            submit.onclick = () => addGuessQuestion(container);
+            submit.textContent = 'Add Another Question';
+            questionDiv.appendChild(submit);
+
+            container.appendChild(questionDiv);
+            questionCount++;
+        }
+
+        function createChooseQuiz() {
+            const div = document.createElement('div');
+            div.id = 'v';
+            document.getElementById('d').appendChild(div);
+            document.getElementById('k').style.display = 'none';
+
+            const mainezr = document.getElementById('name').value;
+            const titlse = document.createElement('legend');
+            titlse.innerHTML = mainezr;
+            div.appendChild(titlse);
+
+            const button = document.createElement('button');
+            button.textContent = 'Create New Question';
+            button.onclick = () => addChooseQuestion(div);
+            div.appendChild(button);
+
+            addChooseQuestion(div);
+
+            const finishButton = document.createElement('button');
+            finishButton.textContent = 'Finish Quiz';
+            finishButton.onclick = finishQuiz;
+            div.appendChild(finishButton);
+        }
+
+        function addChooseQuestion(container) {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+
+            const question = document.createElement('input');
+            question.placeholder = 'Enter your question here...';
+            question.id = `question${questionCount}`;
+            questionDiv.appendChild(question);
+
+            const optionsDiv = document.createElement('div');
+            questionDiv.appendChild(optionsDiv);
+
+            const addOptionButton = document.createElement('button');
+            addOptionButton.textContent = 'Add Option';
+            addOptionButton.onclick = () => addOption(optionsDiv);
+            questionDiv.appendChild(addOptionButton);
+
+            const correctAnswer = document.createElement('input');
+            correctAnswer.placeholder = 'Enter the correct answer...';
+            correctAnswer.id = `correctAnswer${questionCount}`;
+            questionDiv.appendChild(correctAnswer);
+
+            const submitButton = document.createElement('button');
+            submitButton.textContent = 'Add Another Question';
+            submitButton.onclick = () => addChooseQuestion(container);
+            questionDiv.appendChild(submitButton);
+
+            container.appendChild(questionDiv);
+            questionCount++;
+        }
+
+        function addOption(container) {
+            const option = document.createElement('input');
+            option.placeholder = 'Enter an option...';
+            container.appendChild(option);
+            container.appendChild(document.createElement('br'));
+        }
+
+        function finishQuiz() {
+            const quizName = document.getElementById('name').value;
+            const quizType = document.getElementById('type').value;
+
+            const questions = [];
+            for (let i = 1; i < questionCount; i++) {
+                const question = document.getElementById(`question${i}`).value;
+                const answer = document.getElementById(`answer${i}`) ? document.getElementById(`answer${i}`).value : null;
+                const correctAnswer = document.getElementById(`correctAnswer${i}`) ? document.getElementById(`correctAnswer${i}`).value : null;
+
+                if (quizType === 'guess') {
+                    questions.push({ question, answer });
+                } else if (quizType === 'choose') {
+                    const options = [];
+                    const optionsInputs = document.querySelectorAll(`#question${i} ~ div input`);
+                    optionsInputs.forEach(input => options.push(input.value));
+                    questions.push({ question, options, correctAnswer });
+                }
+            }
+
+            const quizData = {
+                quizName,
+                quizType,
+                questions
+            };
+
+            // Serialize the quiz data to JSON
+            const quizJSON = JSON.stringify(quizData, null, 2);
+
+            // Generate a shareable URL and display it with a copy button
+            generateShareableURL(quizJSON);
+
+            // Generate a downloadable file
+            generateDownloadableFile(quizJSON);
+        }
+
+        function generateShareableURL(quizJSON) {
+            // Encode the JSON data to Base64 for URL compatibility
+            const encodedData = btoa(quizJSON);
+
+            // Create a shareable URL
+            const shareableURL = `${window.location.origin}${window.location.pathname}?quiz=${encodedData}`;
+
+            // Create a container for the URL and copy button
+            const urlContainer = document.createElement('div');
+            urlContainer.className = 'url-container';
+
+            // Create an input field to display the URL
+            const urlInput = document.createElement('input');
+            urlInput.type = 'text';
+            urlInput.value = shareableURL;
+            urlInput.readOnly = true;
+
+            // Create a "Copy" button
+            const copyButton = document.createElement('button');
+            copyButton.textContent = 'Copy URL';
+            copyButton.onclick = () => {
+                urlInput.select();
+                document.execCommand('copy');
+                alert('URL copied to clipboard!');
+            };
+
+            // Append the input field and button to the container
+            urlContainer.appendChild(urlInput);
+            urlContainer.appendChild(copyButton);
+
+            // Append the container to the quiz creation UI
+            document.getElementById('d').appendChild(urlContainer);
+        }
+
+        function generateDownloadableFile(quizJSON) {
+            // Create a Blob with the JSON data
+            const blob = new Blob([quizJSON], { type: 'application/json' });
+
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'quiz.json'; // File name for download
+
+            // Trigger the download
+            link.click();
+
+            // Clean up
+            URL.revokeObjectURL(link.href);
+        }
+
+        function loadQuiz(quizData) {
+            // Clear the existing quiz creation UI
+            document.getElementById('d').innerHTML = '';
+
+            // Display the quiz name
+            const title = document.createElement('h1');
+            title.textContent = quizData.quizName;
+            document.getElementById('d').appendChild(title);
+
+            // Load each question
+            quizData.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+
+                const questionText = document.createElement('p');
+                questionText.textContent = `${index + 1}. ${question.question}`;
+                questionDiv.appendChild(questionText);
+
+                if (quizData.quizType === 'guess') {
+                    const input = document.createElement('input');
+                    input.placeholder = 'Enter your answer...';
+                    questionDiv.appendChild(input);
+
+                    const submitButton = document.createElement('button');
+                    submitButton.textContent = 'Submit Answer';
+                    submitButton.onclick = () => {
+                        if (input.value.trim().toLowerCase() === question.answer.toLowerCase()) {
+                            alert('Correct!');
+                        } else {
+                            alert('Incorrect!');
+                        }
+                    };
+                    questionDiv.appendChild(submitButton);
+                } else if (quizData.quizType === 'choose') {
+                    question.options.forEach(option => {
+                        const label = document.createElement('label');
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = `question${index}`;
+                        radio.value = option;
+
+                        label.appendChild(radio);
+                        label.appendChild(document.createTextNode(option));
+                        questionDiv.appendChild(label);
+                        questionDiv.appendChild(document.createElement('br'));
+                    });
+
+                    const submitButton = document.createElement('button');
+                    submitButton.textContent = 'Submit Answer';
+                    submitButton.onclick = () => {
+                        const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                        if (selected && selected.value === question.correctAnswer) {
+                            alert('Correct!');
+                        } else {
+                            alert('Incorrect!');
+                        }
+                    };
+                    questionDiv.appendChild(submitButton);
+                }
+
+                document.getElementById('d').appendChild(questionDiv);
+            });
+        }
+    </script>
+</body>
+</html>
