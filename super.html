@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>anti-virus and bugs</title>
+        <style>
+            button{
+                background-image: url(images.jpg);
+                background-repeat: no-repeat;
+                border-radius: 3px;
+                width: 9cm;
+                height: 4.2cm;
+                font-size: 1.2cm;
+                font-style: normal;
+                color: red;
+                cursor: pointer; transition:
+                 transform 0.1s ease
+            }
+            button:active { 
+                transform: translateY(4px); 
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) inset; }
+            body{
+                display: flex; justify-content: center; 
+                align-items: center;
+                 height: 100vh;
+                margin: 0; 
+                align-items: center;
+                background-image: url(background.png);
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+            /* Simple CSS for the loading spinner */
+            .loader {
+      border: 16px solid #f3f3f3; /* Light grey */
+      border-top: 16px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      animation: spin 2s linear infinite;
+      margin: 50px auto;
+      display: none; /* Initially hidden */
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }}#loading-text {
+  text-align: center;
+  font-size: 60px;
+  margin-top: 10px;
+  display: none; /* Initially hidden */
+}
+        </style>  </head>
+        <body>
+            <button onclick="analyse()">destroy viruses</button><br>
+            <div class="loader" id="loader"></div><br><div id="loading-text">Analysing...</div>        </body>
+  <script>
+    function analyse(){
+function showLoaderForTime(duration, callback) {
+  const loader = document.getElementById('loader');
+  const loadingText = document.getElementById('loading-text');
+
+  loader.style.display = 'block'; // Show the loader
+  loadingText.style.display = 'block'; // Show the text
+
+  setTimeout(() => {
+    loader.style.display = 'none'; // Hide the loader
+    loadingText.style.display = 'none'; // Hide the text
+    if (callback) callback(); // Execute the callback function
+  }, duration);
+}
+
+    // Callback function to execute after loading finishes
+    function onLoadingFinished() {
+        for(let i=0;i<12 ;i++){
+      alert('Looser you were pranked looooooser🤣🤣🤣🤣😂😂'); }// Display an alert
+    }
+
+    // Show the loader for 12 seconds (12000 milliseconds) and then execute the callback
+    showLoaderForTime(12000, onLoadingFinished);}
+  </script>
+</html>
