@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vexetorix Chat</title>
   <link rel="icon" href="hord.png" type="image/png">
   <!-- Include Google Font for a modern sans-serif font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -166,7 +164,7 @@
       <ul class="chat-list">
         <!-- Chat messages will be dynamically added here -->
       </ul>
-    </div>
+  </div>
     <div class="chat-input">
       <textarea placeholder="Type your message..."></textarea>
       <span class="send-btn material-symbols-outlined">send</span>
@@ -181,7 +179,6 @@
 
     let conversationHistory = [];
 
-    // Function to escape HTML to prevent rendering
     const escapeHtml = (unsafe) => {
       return unsafe.replace(/&/g, '&amp;')
                    .replace(/</g, '&lt;')
@@ -197,6 +194,9 @@
 
       // Escape HTML in the message
       message = escapeHtml(message);
+
+      // Replace \n with <br> for new lines
+      message = message.replace(/\n/g, '<br>');
 
       // Check if the message is a code block
       if (message.startsWith("```") && message.endsWith("```")) {
@@ -229,7 +229,7 @@
         body: JSON.stringify({
           model: "gpt-4o-mini",
           messages: [
-            { role: "system", content: "if asked for identity your name is Vexetorix your name is Vexetorix,do not mentione it only if askedyou ll say you were created by Mikel Gemayel (form lebanon metn ain el tefeha dad: charbel gemayel mom:lara chaaya siblings: oliver and georgio gemayel mikel was born in 2010 )  go back to new lines alot write esays and tlk a simple human way exept if asked not to make uniqueessays if asked ,if the user talks like says hey nigger you reply hello (u understand they are joking) +  use openai apikey to get your answers" },
+            { role: "system", content: "when going to new line use \n if asked for identity your name is Vexetorix your name is Vexetorix,do not mentione it only if askedyou ll say you were created by Mikel Gemayel (form lebanon metn ain el tefeha dad: charbel gemayel mom:lara chaaya siblings: oliver and georgio gemayel mikel was born in 2010 )  go back to new lines alot write esays and tlk a simple human way exept if asked not to make uniqueessays if asked ,if the user talks like says hey nigger you reply hello (u understand they are joking) +  use openai apikey to get your answers" },
             ...conversationHistory
           ]
         })
@@ -239,7 +239,7 @@
         .then(res => res.json())
         .then(data => {
           const botMessage = data.choices[0].message.content;
-          messageElement.textContent = botMessage;
+          messageElement.innerHTML = botMessage.replace(/\n/g, '<br>'); // Ensure new lines are rendered
           conversationHistory.push({ role: "assistant", content: botMessage });
           scrollToBottom();
         })
@@ -257,12 +257,10 @@
       chatInput.value = "";
       if (!userMessage) return;
 
-      // Add user message to the chat
       const userChatLi = createChatLi(userMessage, "user");
       chatBox.appendChild(userChatLi);
       scrollToBottom();
 
-      // Simulate bot response
       setTimeout(() => {
         const botChatLi = createChatLi("Wait a minute...", "bot");
         chatBox.appendChild(botChatLi);
@@ -279,5 +277,5 @@
       }
     });
   </script>
-</body>
-</html>
+
+</body></html>
