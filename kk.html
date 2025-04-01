@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Thalès & Pythagore</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .option {
+            padding: 10px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #d9d9d9;
+        }
+        .selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .incorrect {
+            background-color: #f44336;
+            color: white;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .progress {
+            height: 10px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-left: 4px solid #4CAF50;
+            display: none;
+        }
+        .figure {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Quiz Thalès & Pythagore</h1>
+        <div class="progress">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        <div class="score" id="score">Score: 0/0</div>
+        <div class="question" id="question"></div>
+        <div class="figure" id="figure"></div>
+        <div class="options" id="options"></div>
+        <div class="explanation" id="explanation"></div>
+        <div class="controls">
+            <button id="prev" disabled>Précédent</button>
+            <button id="next">Suivant</button>
+            <button id="submit" style="display: none;">Soumettre</button>
+        </div>
+    </div>
+
+    <script>
+        // Questions database (120 questions)
+        const questions = [
+            // Thalès questions (60)
+            {
+                question: "Dans la configuration de Thalès classique, que peut-on dire des droites ?",
+                options: ["Elles sont parallèles", "Elles sont perpendiculaires", "Elles sont sécantes", "Elles sont sécantes et ontdeux droites parraleles"],
+                answer: 3,
+                explanation: "Le théorème de Thalès s'applique lorsque deux droites sont coupées par des droites parallèles."
+            },
+            {
+                question: "Si AD/AB = AE/AC = 1/2 dans une configuration de Thalès, que vaut DE/BC ?",
+                options: ["1/2", "1/4", "2", "Impossible à déterminer"],
+                answer: 0,
+                explanation: "D'après le théorème de Thalès, le rapport entre les longueurs des segments sur les parallèles est égal au rapport des longueurs sur les transversales."
+            },
+            {
+                question: "Dans un triangle ABC, si M sur [AB], N sur [AC] et (MN) ∥ (BC), alors:",
+                options: ["AM/AB = AN/AC = MN/BC", "AB/AM = AC/AN = BC/MN", "AM/MB = AN/NC", "AB/AC = MN/BC"],
+                answer: 0,
+                explanation: "C'est l'énoncé direct du théorème de Thalès dans le triangle."
+            },
+            {
+                question: "Quelle est la longueur x dans la configuration suivante: AB=4, AD=2, AC=6, AE=3, DE=5 ?",
+                options: ["10", "7.5", "2.5", "8"],
+                answer: 0,
+                explanation: "On vérifie AD/AB = AE/AC = 1/2, donc par Thalès BC = 2×DE = 10."
+            },
+            {
+                question: "Dans quel cas ne peut-on PAS appliquer le théorème de Thalès ?",
+                options: ["Lorsque les droites sont parallèles", "Lorsque les rapports sont égaux", "Lorsque les angles sont égaux", "Lorsque les droites sont perpendiculaires"],
+                answer: 3,
+                explanation: "Le théorème de Thalès nécessite des droites parallèles, pas forcément perpendiculaires à autre chose."
+            },
+            {
+                question: "Si AM/AB = AN/AC = 2/3 et BC = 12 cm, que vaut MN ?",
+                options: ["8 cm", "18 cm", "6 cm", "9 cm"],
+                answer: 0,
+                explanation: "D'après Thalès, MN/BC = AM/AB ⇒ MN = (2/3)×12 = 8 cm."
+            },
+            {
+                question: "Quelle est la réciproque du théorème de Thalès ?",
+                options: [
+                    "Si les rapports sont égaux, alors les droites sont parallèles",
+                    "Si les droites sont parallèles, alors les rapports sont égaux",
+                    "Si les angles sont égaux, alors les rapports sont égaux",
+                    "Si les rapports sont égaux, alors les angles sont égaux"
+                ],
+                answer: 0,
+                explanation: "La réciproque permet de démontrer le parallélisme lorsque les rapports sont égaux."
+            },
+            {
+                question: "Dans une configuration de Thalès, si AD/AB = 3/4 et DE = 9 cm, que vaut BC ?",
+                options: ["12 cm", "6.75 cm", "16 cm", "21 cm"],
+                answer: 0,
+                explanation: "BC = DE / (AD/AB) = 9 / (3/4) = 12 cm."
+            },
+            {
+                question: "Quelle configuration NE permet PAS d'appliquer Thalès ?",
+                options: ["Le papillon", "Le triangle", "Le rectangle", "Les deux droites sécantes"],
+                answer: 2,
+                explanation: "La configuration rectangle seule ne permet pas d'appliquer Thalès qui nécessite des triangles ou des sécantes coupées par des parallèles."
+            },
+            {
+                question: "Si dans une configuration de Thalès AM/AB = AN/AC = k, alors l'aire de AMN / aire de ABC vaut:",
+                options: ["k", "k²", "2k", "√k"],
+                answer: 1,
+                explanation: "Les aires sont dans le rapport carré des longueurs (k × k = k²)."
+            },
+            // Pythagoras questions (60)
+            {
+                question: "Que dit le théorème de Pythagore ?",
+                options: [
+                    "a² + b² = c² dans un triangle rectangle",
+                    "a + b = c dans un triangle rectangle",
+                    "a² = b² + c² dans tout triangle",
+                    "a² + b² = c² dans tout triangle"
+                ],
+                answer: 0,
+                explanation: "Pythagore énonce que dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés."
+            },
+            {
+                question: "Dans un triangle rectangle d'hypoténuse 5 et un côté 3, quel est l'autre côté ?",
+                options: ["4", "√34", "2", "3.5"],
+                answer: 0,
+                explanation: "3² + x² = 5² ⇒ 9 + x² = 25 ⇒ x² = 16 ⇒ x = 4."
+            },
+            {
+                question: "Un triangle de côtés 6, 8, 10 est-il rectangle ?",
+                options: ["Oui", "Non", "Seulement si angle droit entre 6 et 8", "Impossible à déterminer"],
+                answer: 0,
+                explanation: "6² + 8² = 36 + 64 = 100 = 10², donc il est rectangle d'après la réciproque de Pythagore."
+            },
+            {
+                question: "Si les côtés d'un triangle vérifient a² + b² < c², alors le triangle est:",
+                options: ["Acutangle", "Rectangle", "Obtusangle", "Équilatéral"],
+                answer: 2,
+                explanation: "C'est la contraposée de Pythagore: si a² + b² < c², l'angle opposé à c est obtus."
+            },
+            {
+                question: "Quelle est la longueur de la diagonale d'un rectangle de côtés 3 et 4 ?",
+                options: ["5", "7", "√7", "6"],
+                answer: 0,
+                explanation: "La diagonale est l'hypoténuse d'un triangle rectangle 3-4-5."
+            },
+            {
+                question: "Dans un triangle rectangle isocèle, si les côtés égaux valent 1, l'hypoténuse vaut:",
+                options: ["√2", "2", "1.5", "√3"],
+                answer: 0,
+                explanation: "1² + 1² = 2 ⇒ hypoténuse = √2."
+            },
+            {
+                question: "La réciproque de Pythagore permet de:",
+                options: [
+                    "Calculer un côté manquant",
+                    "Démontrer qu'un triangle est rectangle",
+                    "Démontrer qu'un triangle est isocèle",
+                    "Calculer des angles"
+                ],
+                answer: 1,
+                explanation: "La réciproque permet de prouver qu'un triangle est rectangle si a² + b² = c²."
+            },
+            {
+                question: "Un triangle de côtés 5, 12, 13 est:",
+                options: ["Rectangle", "Acutangle", "Obtusangle", "Isocele"],
+                answer: 0,
+                explanation: "5² + 12² = 25 + 144 = 169 = 13², donc rectangle."
+            },
+            {
+                question: "Si dans un triangle rectangle la hauteur relative à l'hypoténuse est h, et les projections des cathètes sont p et q, alors:",
+                options: ["h² = p×q", "h = p + q", "h² = p² + q²", "h = (p + q)/2"],
+                answer: 0,
+                explanation: "C'est une conséquence du théorème de la hauteur dans le triangle rectangle."
+            },
+            {
+                question: "Laquelle de ces triplets n'est PAS pythagoricien ?",
+                options: ["(7, 24, 25)", "(8, 15, 17)", "(9, 12, 15)", "(10, 12, 15)"],
+                answer: 3,
+                explanation: "10² + 12² = 244 ≠ 225 = 15², donc (10,12,15) ne vérifie pas Pythagore."
+            },
+            // Generate more questions (100 more)
+            ...Array.from({length: 50}, (_, i) => generateThalesQuestion(i + 11)),
+            ...Array.from({length: 50}, (_, i) => generatePythagorasQuestion(i + 11))
+        ];
+
+        // Helper functions to generate questions
+        function generateThalesQuestion(index) {
+            const k = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
+            const m = [3, 4, 5, 6][Math.floor(Math.random() * 4)];
+            const n = k * m;
+            
+            const configType = Math.random() > 0.5 ? "triangle" : "sécantes";
+            
+            if (configType === "triangle") {
+                return {
+                    question: `Dans un triangle ABC, M sur [AB], N sur [AC] avec (MN) ∥ (BC). Si AM = ${k} cm, AB = ${n} cm et BC = ${m} cm, quelle est la longueur MN ?`,
+                    options: [
+                        `${k} cm`,
+                        `${m} cm`,
+                        `${(k*m/n).toFixed(1)} cm`,
+                        `${(n/k).toFixed(1)} cm`
+                    ],
+                    answer: 2,
+                    explanation: `Par Thalès, MN/BC = AM/AB ⇒ MN/${m} = ${k}/${n} ⇒ MN = ${k} cm`
+                };
+            } else {
+                return {
+                    question: `Dans une configuration de Thalès avec deux droites sécantes coupées par deux parallèles, si AD = ${k}, AB = ${n}, DE = ${m}, quelle est BC ?`,
+                    options: [
+                        `${n} cm`,
+                        `${(n*m/k).toFixed(1)} cm`,
+                        `${(k*m).toFixed(1)} cm`,
+                        `${(n/k).toFixed(1)} cm`
+                    ],
+                    answer: 1,
+                    explanation: `Par Thalès, AD/AB = DE/BC ⇒ ${k}/${n} = ${m}/BC ⇒ BC = ${n}×${m}/${k} = ${(n*m/k).toFixed(1)} cm`
+                };
+            }
+        }
+
+        function generatePythagorasQuestion(index) {
+            // Generate a Pythagorean triple
+            const triples = [
+                [3,4,5], [5,12,13], [7,24,25], [8,15,17], [9,40,41],
+                [6,8,10], [10,24,26], [12,16,20], [14,48,50], [15,20,25]
+            ];
+            const [a,b,c] = triples[Math.floor(Math.random() * triples.length)];
+            
+            const questionType = Math.floor(Math.random() * 4);
+            
+            switch(questionType) {
+                case 0: // Find hypotenuse
+                    return {
+                        question: `Dans un triangle rectangle, si les deux côtés de l'angle droit mesurent ${a} cm et ${b} cm, quelle est la longueur de l'hypoténuse ?`,
+                        options: [
+                            `${c} cm`,
+                            `${Math.sqrt(a*a + b*b).toFixed(1)} cm`,
+                            `${a + b} cm`,
+                            `${(a*b/2).toFixed(1)} cm`
+                        ],
+                        answer: 0,
+                        explanation: `D'après Pythagore: √(${a}² + ${b}²) = √(${a*a} + ${b*b}) = √${a*a + b*b} = ${c} cm`
+                    };
+                
+                case 1: // Find a leg
+                    return {
+                        question: `Dans un triangle rectangle d'hypoténuse ${c} cm et un côté de l'angle droit ${a} cm, quelle est la longueur de l'autre côté ?`,
+                        options: [
+                            `${b} cm`,
+                            `${Math.sqrt(c*c - a*a).toFixed(1)} cm`,
+                            `${c - a} cm`,
+                            `${(a*c).toFixed(1)} cm`
+                        ],
+                        answer: 0,
+                        explanation: `D'après Pythagore: √(${c}² - ${a}²) = √(${c*c} - ${a*a}) = √${c*c - a*a} = ${b} cm`
+                    };
+                
+                case 2: // Verify if right-angled
+                    const notRight = [a+1, b, c+1][Math.floor(Math.random() * 3)];
+                    return {
+                        question: `Un triangle avec des côtés de ${a}, ${b}, ${notRight} cm est-il rectangle ?`,
+                        options: [
+                            "Oui",
+                            "Non",
+                            "Seulement si l'angle droit est entre les deux plus petits",
+                            "Impossible à déterminer"
+                        ],
+                        answer: notRight === c ? 0 : 1,
+                        explanation: notRight === c 
+                            ? `${a}² + ${b}² = ${a*a + b*b} = ${c}² donc rectangle`
+                            : `${a}² + ${b}² = ${a*a + b*b} ≠ ${notRight}² donc non rectangle`
+                    };
+                
+                case 3: // Application (diagonal, height, etc.)
+                    return {
+                        question: `Quelle est la longueur de la diagonale d'un rectangle de côtés ${a} cm et ${b} cm ?`,
+                        options: [
+                            `${c} cm`,
+                            `${a + b} cm`,
+                            `${(a + b)/2} cm`,
+                            `${Math.sqrt(a + b).toFixed(1)} cm`
+                        ],
+                        answer: 0,
+                        explanation: `La diagonale est l'hypoténuse d'un triangle rectangle ${a}-${b}-${c} donc ${c} cm`
+                    };
+            }
+        }
+
+        // Variables d'état
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = Array(questions.length).fill(null);
+        let quizCompleted = false;
+
+        // Éléments DOM
+        const questionEl = document.getElementById('question');
+        const figureEl = document.getElementById('figure');
+        const optionsEl = document.getElementById('options');
+        const scoreEl = document.getElementById('score');
+        const progressEl = document.getElementById('progress');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        const submitBtn = document.getElementById('submit');
+        const explanationEl = document.getElementById('explanation');
+
+        // Charger une question
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            questionEl.textContent = `Question ${currentQuestion + 1}: ${q.question}`;
+            
+            // Clear any existing figure
+            figureEl.innerHTML = '';
+            
+            optionsEl.innerHTML = '';
+            q.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.classList.add('option');
+                if (userAnswers[currentQuestion] === index) {
+                    optionEl.classList.add('selected');
+                    if (index !== q.answer) {
+                        optionEl.classList.add('incorrect');
+                    }
+                }
+                optionEl.textContent = option;
+                optionEl.addEventListener('click', () => selectOption(index));
+                optionsEl.appendChild(optionEl);
+            });
+            
+            // Afficher l'explication si la question a été répondue
+            if (userAnswers[currentQuestion] !== null) {
+                showExplanation();
+            } else {
+                explanationEl.style.display = 'none';
+            }
+            
+            // Mettre à jour les boutons
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+            
+            // Mettre à jour la progression
+            progressEl.style.width = `${(currentQuestion + 1) / questions.length * 100}%`;
+            
+            // Mettre à jour le score
+            calculateScore();
+        }
+
+        // Sélectionner une option
+        function selectOption(index) {
+            // Enlever la sélection précédente
+            const options = optionsEl.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.classList.remove('incorrect');
+            });
+            
+            // Ajouter la nouvelle sélection
+            options[index].classList.add('selected');
+            userAnswers[currentQuestion] = index;
+            
+            // Vérifier la réponse
+            const q = questions[currentQuestion];
+            if (index === q.answer) {
+                options[index].classList.add('selected');
+            } else {
+                options[index].classList.add('incorrect');
+                options[q.answer].classList.add('selected');
+            }
+            
+            // Afficher l'explication
+            showExplanation();
+            
+            // Recalculer le score
+            calculateScore();
+        }
+
+        // Afficher l'explication
+        function showExplanation() {
+            if (userAnswers[currentQuestion] !== null) {
+                explanationEl.textContent = questions[currentQuestion].explanation;
+                explanationEl.style.display = 'block';
+            }
+        }
+
+        // Calculer le score
+        function calculateScore() {
+            score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === questions[index].answer) {
+                    score++;
+                }
+            });
+            scoreEl.textContent = `Score: ${score}/${questions.length}`;
+            return score;
+        }
+
+        // Événements
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            quizCompleted = true;
+            calculateScore();
+            alert(`Quiz terminé ! Votre score est ${score}/${questions.length} (${Math.round(score/questions.length*100)}%)`);
+        });
+
+        // Initialiser le quiz
+        loadQuestion();
+    </script>
+</body>
+</html>
